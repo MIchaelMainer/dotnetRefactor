@@ -3,11 +3,8 @@
 // ------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
+using Async = System.Threading.Tasks;
 
 namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
 {
@@ -15,7 +12,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
     {
         // http://graph.microsoft.io/en-us/docs/api-reference/v1.0/api/singlevaluelegacyextendedproperty_post_singlevalueextendedproperties
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ContactsSetGetSingleExtendedProperty()
+        public async Async.Task ContactsSetGetSingleExtendedProperty()
         {
             try
             {

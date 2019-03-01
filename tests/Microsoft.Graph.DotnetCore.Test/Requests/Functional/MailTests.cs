@@ -2,12 +2,8 @@
 //  Copyright (c) Microsoft Corporation.  All Rights Reserved.  Licensed under the MIT License.  See License in the project root for license information.
 // ------------------------------------------------------------------------------
 
-using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
@@ -68,29 +64,29 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             }
         }
 
-        //// Test that we can set an attachment on a mail, send it, and then retrieve it.
-        //[Fact]
-        //public async System.Threading.Tasks.Task MailSendMailWithFileAttachment()
-        //{
-        //    try
-        //    {
-        //        var message = await createEmail("Sent from the MailSendMailWithAttachment test.");
+        // Test that we can set an attachment on a mail, send it, and then retrieve it.
+        [Fact(Skip = "No CI set up for functional tests")]
+        public async System.Threading.Tasks.Task MailSendMailWithFileAttachment()
+        {
+            try
+            {
+                var message = await createEmail("Sent from the MailSendMailWithAttachment test.");
 
-        //        var attachment = new FileAttachment();
-        //        attachment.ODataType = "#microsoft.graph.fileAttachment";
-        //        attachment.Name = "MyFileAttachment.txt";
-        //        attachment.ContentBytes = Microsoft.Graph.DotnetCore.Test.Properties.Resources.textfile;
+                var attachment = new FileAttachment();
+                attachment.ODataType = "#microsoft.graph.fileAttachment";
+                attachment.Name = "MyFileAttachment.txt";
+                attachment.ContentBytes = Microsoft.Graph.DotnetCore.Test.Properties.Resource1.hamilton;
 
-        //        message.Attachments = new MessageAttachmentsCollectionPage();
-        //        message.Attachments.Add(attachment);
+                message.Attachments = new MessageAttachmentsCollectionPage();
+                message.Attachments.Add(attachment);
 
-        //        await graphClient.Me.SendMail(message, true).Request().PostAsync();
-        //    }
-        //    catch (Microsoft.Graph.ServiceException e)
-        //    {
-        //        Assert.True(false, "Something happened, check out a trace. Error code: " + e.Error.Code);
-        //    }
-        //}
+                await graphClient.Me.SendMail(message, true).Request().PostAsync();
+            }
+            catch (Microsoft.Graph.ServiceException e)
+            {
+                Assert.True(false, "Something happened, check out a trace. Error code: " + e.Error.Code);
+            }
+        }
 
         [Fact(Skip = "No CI set up for functional tests")]
         public async System.Threading.Tasks.Task MailGetMailWithFileAttachment()

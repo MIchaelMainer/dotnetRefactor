@@ -4,13 +4,14 @@
 
 using System.Collections.Generic;
 using Xunit;
+using Async = System.Threading.Tasks;
 
 namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
 {
     public class ExtensionTests : GraphTestBase
     {
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExtensionAddRoamingProfile()
+        public async Async.Task ExtensionAddRoamingProfile()
         {
             try
             {

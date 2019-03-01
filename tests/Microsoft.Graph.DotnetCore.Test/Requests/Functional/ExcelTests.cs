@@ -7,12 +7,11 @@
 // -- Use the template at the bottom of this file.  Make sure to create test file per test method and then delete your resource.
 // -- Add worksheets to Requests\Functional\Resources\excelTestResource to target for your test case. Do not touch existing sheets.
 
-using Microsoft.Graph;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Http;
+using Async = System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
@@ -22,7 +21,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         private string fileId;
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task OneDriveCreateDeleteExcelWorkbook()
+        public async Async.Task OneDriveCreateDeleteExcelWorkbook()
         {
             try
             {
@@ -37,7 +36,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             }
         }
 
-        public async System.Threading.Tasks.Task OneDriveSearchForTestFile(string fileName = "_excelTestResource.xlsx")
+        public async Async.Task OneDriveSearchForTestFile(string fileName = "_excelTestResource.xlsx")
         {
             try
             {
@@ -60,7 +59,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             }
         }
 
-        public async System.Threading.Tasks.Task<string> OneDriveCreateTestFile(string fileName)
+        public async Async.Task<string> OneDriveCreateTestFile(string fileName)
         {
             try
             {
@@ -93,7 +92,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             return "";
         }
 
-        public async System.Threading.Tasks.Task OneDriveUploadTestFileContent(string fileId)
+        public async Async.Task OneDriveUploadTestFileContent(string fileId)
         {
             //try
             //{
@@ -114,7 +113,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             //}
         }
 
-        public async System.Threading.Tasks.Task OneDriveDeleteTestFile(string fileId, int delayInMilliseconds = 0)
+        public async Async.Task OneDriveDeleteTestFile(string fileId, int delayInMilliseconds = 0)
         {
             try
             {
@@ -132,7 +131,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
                 // you PATCH/POST/PUT to the workbook before you DELETE in test.
                 if (delayInMilliseconds > 0)
                 {
-                    await System.Threading.Tasks.Task.Delay(delayInMilliseconds);
+                    await Async.Task.Delay(delayInMilliseconds);
                 }
 
                 // Delete the workbook.
@@ -149,7 +148,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelGetUpdateRange()
+        public async Async.Task ExcelGetUpdateRange()
         {
             try
             {
@@ -194,7 +193,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelChangeNumberFormat()
+        public async Async.Task ExcelChangeNumberFormat()
         {
             try
             {
@@ -229,7 +228,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelAbsFunc()
+        public async Async.Task ExcelAbsFunc()
         {
             try
             {
@@ -253,7 +252,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelSetFormula()
+        public async Async.Task ExcelSetFormula()
         {
             try
             {
@@ -286,7 +285,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelAddTableUsedRange()
+        public async Async.Task ExcelAddTableUsedRange()
         {
             try
             {
@@ -331,7 +330,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelAddRowToTable()
+        public async Async.Task ExcelAddRowToTable()
         {
             try
             {
@@ -364,7 +363,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelSortTableOnFirstColumnValue()
+        public async Async.Task ExcelSortTableOnFirstColumnValue()
         {
             try
             {
@@ -397,7 +396,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelFilterTableValues()
+        public async Async.Task ExcelFilterTableValues()
         {
             try
             {
@@ -423,7 +422,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
         }
 
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelCreateChartFromTable()
+        public async Async.Task ExcelCreateChartFromTable()
         {
             try
             {
@@ -455,8 +454,80 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             }
         }
 
+
         [Fact(Skip = "No CI set up for functional tests")]
-        public async System.Threading.Tasks.Task ExcelProtectWorksheet()
+        public async Async.Task ExcelGetImageFromChart()
+        {
+            try
+            {
+                var excelFileId = await OneDriveCreateTestFile("_excelCreateChartFromTable.xlsx");
+                await OneDriveUploadTestFileContent(excelFileId);
+
+                // Get the table range.
+                var tableRange = await graphClient.Me.Drive.Items[excelFileId]
+                                                            .Workbook
+                                                            .Tables["CreateChartFromTable"] // Set in excelTestResource.xlsx
+                                                            .Range()
+                                                            .Request()
+                                                            .GetAsync();
+
+                // Create a chart based on the table range.
+                var workbookChart = await graphClient.Me.Drive.Items[excelFileId]
+                                                                .Workbook
+                                                                .Worksheets["CreateChartFromTable"] // Set in excelTestResource.xlsx
+                                                                .Charts
+                                                                .Add("ColumnStacked", "Auto", tableRange.Address)
+                                                                .Request()
+                                                                .PostAsync();
+
+                // Sometimes the creation of the chart takes too long and the new chart resource isn't accessible.
+                await Async.Task.Delay(1000);
+
+                // Workaround since the metadata description isn't correct as it states it returns a string and not the 
+                // actual JSON object, and since the service doesn't accept the fully qualified name that the client emits
+                // even though it should accept the FQN.
+                string chartResourceUrl = graphClient.Me.Drive.Items[excelFileId]
+                                                        .Workbook
+                                                        .Worksheets["CreateChartFromTable"] // Set in excelTestResource.xlsx
+                                                        .Charts[workbookChart.Name]
+                                                        .Request()
+                                                        .RequestUrl;
+
+                string urlToGetImageFromChart = String.Format("{0}/{1}", chartResourceUrl, "image(width=400)");
+
+                HttpRequestMessage hrm = new HttpRequestMessage(HttpMethod.Get, urlToGetImageFromChart);
+
+                // Send the request and get the response.
+                HttpResponseMessage response = await graphClient.HttpProvider.SendAsync(hrm);
+
+                // Get the JsonObject page that we created.
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+
+                    JObject imageObject = JObject.Parse(content);
+                    JToken obj = imageObject.GetValue("value");
+
+                    Assert.NotNull(obj);
+                }
+                else
+                    throw new ServiceException(
+                        new Error
+                        {
+                            Code = response.StatusCode.ToString(),
+                            Message = await response.Content.ReadAsStringAsync()
+                        });
+
+                await OneDriveDeleteTestFile(excelFileId, 3000);
+            }
+            catch (Microsoft.Graph.ServiceException e)
+            {
+                Assert.True(false, $"Something happened. Error code: {e.Error.Code}");
+            }
+        }
+
+        [Fact(Skip = "No CI set up for functional tests")]
+        public async Async.Task ExcelProtectWorksheet()
         {
             string excelFileId = "";
 
@@ -511,7 +582,7 @@ namespace Microsoft.Graph.DotnetCore.Test.Requests.Functional
             }
         }
 
-        //public async System.Threading.Tasks.Task ExcelTestTemplate()
+        //public async Async.Task ExcelTestTemplate()
         //{
         //    // Before you add a test, setup your test resource in /Resources/excelTestResource.xlsx. Add test data to a new sheet.
         //    try
